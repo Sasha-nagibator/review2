@@ -31,22 +31,22 @@ async def stats(message: types.Message):
     data = pd.read_csv('RU.csv')
     max_temp = data['temp'].max()
     avg_pressure = data['pres'].mean()
-    max_temp_time = data[(data['temp'] == max_temp)]["time_local"]
+    max_temp_time = data[(data['temp'] == max_temp)]["time_local"].values[0]
     max_prcp = data['prcp'].max()
     min_wind = data['wspd'].min()
-    max_prcp_time = data[(data['prcp'] == max_prcp)]["time_local"]
+    max_prcp_time = data[(data['prcp'] == max_prcp)]["time_local"].values[0]
     best_weather = data[(data['temp'] > max_temp - 3) & (data['prcp'] == 0) &
-                        (data['wspd'] < min_wind + 6)]
+                        (data['wspd'] < min_wind + 6)].values
 
     await message.reply(f"максимальная температура была {max_temp}, это было в {max_temp_time}")
 
     await bot.send_message(message.from_user.id, f"среднее давление за это время {avg_pressure}")
     await bot.send_message(message.from_user.id, f"больше всего осадков было {max_prcp}, это было в {max_prcp_time}")
 
-    await bot.send_message(message.from_user.id, f"самая комфортная погода была в {best_weather['time_local']}:"
-                                                 f"температура {best_weather['temp']},"
-                                                 f" осадки {best_weather['prcp']},"
-                                                 f"скорость ветра {best_weather['wspd']}")
+    await bot.send_message(message.from_user.id, "самая комфортная погода была в:")
+    for elem in best_weather:
+        str_to_print = f"в {elem[1]} температура была {elem[2]}, осадков не было, скорость ветра была {elem[8]} м\с"
+        await bot.send_message(message.from_user.id, str_to_print)
 
 
 @dp.message_handler()

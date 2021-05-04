@@ -17,14 +17,17 @@ async def start(message: types.Message):
 
     """
 
-    await message.reply("Привет! Напиши мне название города и я пришлю сводку погоды!"
-                        "Или напиши /stats и я пришлю статистику погоды в Москве за последнее время!")
+    await message.reply("Привет! Напиши мне название города и я пришлю сводку"
+                        "погоды!"
+                        " Или напиши /stats и я пришлю статистику погоды"
+                        "в Москве за последнее время!")
 
 
 @dp.message_handler(commands=["stats"])
 async def stats(message: types.Message):
     """
-    Выводит статистику погоды в Мосвае за последнее время. Данные читает из базы данных
+    Выводит статистику погоды в Мосвае за последнее время.
+    Данные читает из базы данных
 
     """
 
@@ -38,14 +41,20 @@ async def stats(message: types.Message):
     best_weather = data[(data['temp'] > max_temp - 3) & (data['prcp'] == 0) &
                         (data['wspd'] < min_wind + 6)].values
 
-    await message.reply(f"максимальная температура была {max_temp}, это было в {max_temp_time}")
+    await message.reply(f"максимальная температура была {max_temp},"
+                        f"это было в {max_temp_time}")
 
-    await bot.send_message(message.from_user.id, f"среднее давление за это время {avg_pressure}")
-    await bot.send_message(message.from_user.id, f"больше всего осадков было {max_prcp}, это было в {max_prcp_time}")
+    await bot.send_message(message.from_user.id, f"среднее давление за это"
+                                                 f"время {avg_pressure}")
+    await bot.send_message(message.from_user.id, f"больше всего осадков было"
+                                                 f"{max_prcp}, это было в"
+                                                 f"{max_prcp_time}")
 
-    await bot.send_message(message.from_user.id, "самая комфортная погода была в:")
+    await bot.send_message(message.from_user.id, "самая комфортная погода"
+                                                 "была в:")
     for elem in best_weather:
-        str_to_print = f"в {elem[1]} температура была {elem[2]}, осадков не было, скорость ветра была {elem[8]} м\с"
+        str_to_print = f"в {elem[1]} температура была {elem[2]}, осадков не" \
+                       f"было, скорость ветра была {elem[8]} м/с"
         await bot.send_message(message.from_user.id, str_to_print)
 
 
@@ -70,7 +79,8 @@ async def get_weather(message: types.Message):
 
     try:
         request = requests.get(
-            f"http://api.openweathermap.org/data/2.5/weather?q={message.text}&appid={open_weather_token}&units=metric"
+            f"http://api.openweathermap.org/data/2.5/weather?q={message.text}"
+            f"&appid={open_weather_token}&units=metric"
         )
         data = request.json()
 
@@ -84,20 +94,27 @@ async def get_weather(message: types.Message):
         humidity = data["main"]["humidity"]
         pressure = data["main"]["pressure"]
         wind = data["wind"]["speed"]
-        sunrise_timestamp = datetime.datetime.fromtimestamp(data["sys"]["sunrise"])
-        sunset_timestamp = datetime.datetime.fromtimestamp(data["sys"]["sunset"])
-        length_of_the_day = datetime.datetime.fromtimestamp(data["sys"]["sunset"]) - datetime.datetime.fromtimestamp(
-            data["sys"]["sunrise"])
+        sunrise_timestamp = datetime.datetime.\
+            fromtimestamp(data["sys"]["sunrise"])
+        sunset_timestamp = datetime.datetime.\
+            fromtimestamp(data["sys"]["sunset"])
+        length_of_the_day = datetime.datetime.\
+            fromtimestamp(data["sys"]["sunset"]) - datetime.datetime.\
+            fromtimestamp(data["sys"]["sunrise"])
 
-        await message.reply(f"***{datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}***\n"
-                            f"Погода в городе: {city}\nТемпература: {cur_weather}°C {wd}\n"
-                            f"Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст\nВетер: {wind} м/с\n"
-                            f"Восход солнца: {sunrise_timestamp}\nЗакат солнца: {sunset_timestamp}\nПродолжительность "
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+        await message.reply(f"{current_time}\n"
+                            f"Погода в городе: {city}\nТемпература:"
+                            f" {cur_weather}°C {wd}\n"
+                            f"Влажность: {humidity}%\nДавление:"
+                            f" {pressure} мм.рт.ст\nВетер: {wind} м/с\n"
+                            f"Восход солнца: {sunrise_timestamp}\nЗакат"
+                            f" солнца: {sunset_timestamp}\nПродолжительность "
                             f"дня: {length_of_the_day}\n "
                             f"***Хорошего дня!***"
                             )
 
-    except Exception as e:
+    except Exception:
         await message.reply("\U00002620 Проверьте название города \U00002620")
 
 

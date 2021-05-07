@@ -1,5 +1,6 @@
-import requests
 import datetime
+import requests
+
 from config import open_weather_token
 
 

@@ -1,10 +1,11 @@
 import datetime
 import pandas as pd
 import requests
-from config import tg_bot_token, open_weather_token
+
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+from config import tg_bot_token, open_weather_token
 
 bot = Bot(token=tg_bot_token)
 dp = Dispatcher(bot)
@@ -54,7 +55,7 @@ async def stats(message: types.Message):
                                                  "была в:")
     for elem in best_weather:
         str_to_print = f"в {elem[1]} температура была {elem[2]}, осадков не" \
-                       f"было, скорость ветра была {elem[8]} м/с"
+                       f" было, скорость ветра была {elem[8]} м/с"
         await bot.send_message(message.from_user.id, str_to_print)
 
 

@@ -1,6 +1,7 @@
 import unittest
-from main import get_weather
+
 from config import open_weather_token
+from main import get_weather
 
 
 class Test_get_weather(unittest.TestCase):

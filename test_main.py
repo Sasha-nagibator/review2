@@ -23,11 +23,13 @@ class Test_get_weather(unittest.TestCase):
         (что правильно выводит температуру)
 
         """
+        extrimely_cold = -50
 
-        self.assertGreater(get_weather("Riga", open_weather_token)[1], -50)
+        self.assertGreater(get_weather("Riga", open_weather_token)['temp'],
+                           extrimely_cold)
 
-        self.assertLess(get_weather("Riga", open_weather_token)[1],
-                        get_weather("Dubai", open_weather_token)[1])
+        self.assertLess(get_weather("Riga", open_weather_token)['temp'],
+                        get_weather("Dubai", open_weather_token)['temp'])
 
     def test_LanguagesCheck(self):
         """
@@ -59,9 +61,12 @@ class Test_get_weather(unittest.TestCase):
 
         """
 
-        self.assertEqual(get_weather("ош", open_weather_token)[6] -
-                         get_weather("ош", open_weather_token)[5],
-                         get_weather("ош", open_weather_token)[7])
+        self.assertEqual(get_weather("riga", open_weather_token)
+                         ['sunset_timestamp'] -
+                         get_weather("riga", open_weather_token)
+                         ['sunrise_timestamp'],
+                         get_weather("riga", open_weather_token)
+                         ['length_of_the_day'])
 
     def test_typesCheck(self):
         """
@@ -70,9 +75,13 @@ class Test_get_weather(unittest.TestCase):
 
         """
 
-        self.assertIsInstance(get_weather("ufa", open_weather_token)[0], str)
-        self.assertIsInstance(get_weather("riga", open_weather_token)[1], int)
-        self.assertIsInstance(get_weather("омск", open_weather_token)[2], int)
-        self.assertIsInstance(get_weather("уфа", open_weather_token)[3], int)
-        self.assertIsInstance(get_weather("riga", open_weather_token)[4],
-                              float)
+        self.assertIsInstance(get_weather("ufa", open_weather_token)
+                              ['city'], str)
+        self.assertIsInstance(get_weather("riga", open_weather_token)
+                              ['temp'], int)
+        self.assertIsInstance(get_weather("омск", open_weather_token)
+                              ['humidity'], int)
+        self.assertIsInstance(get_weather("уфа", open_weather_token)
+                              ['pressure'], int)
+        self.assertIsInstance(get_weather("riga", open_weather_token)
+                              ['wind'], float)

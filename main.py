@@ -62,8 +62,11 @@ def get_weather(city, open_weather_token):
               f"Хорошего дня!"
               )'''
 
-        return city, temp, humidity, pressure, wind, sunrise_timestamp, \
-            sunset_timestamp, length_of_the_day
+        return {'city': city, 'temp': temp, 'humidity': humidity,
+                'pressure': pressure, 'wind': wind,
+                'sunrise_timestamp': sunrise_timestamp,
+                'sunset_timestamp': sunset_timestamp,
+                'length_of_the_day': length_of_the_day}
 
     except Exception:
         # раскомментите если хотите проверить тут а не в тг

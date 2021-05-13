@@ -38,6 +38,11 @@
    pip install aiogram
 ```
 
+Если не установлен peewee:  
+```bash
+   pip install peewee
+```
+
 ### __Запустить тесты__
 ```bash
    python3 -m unittest test_main.py

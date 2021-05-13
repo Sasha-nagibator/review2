@@ -6,6 +6,7 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from config import tg_bot_token, open_weather_token
+from peewee import *
 
 bot = Bot(token=tg_bot_token)
 dp = Dispatcher(bot)
@@ -31,32 +32,64 @@ async def stats(message: types.Message):
     Данные читает из базы данных
 
     """
-
+    small_difference = 5
+    nothing = 0
     data = pd.read_csv('RU.csv')
     max_temp = data['temp'].max()
-    avg_pressure = data['pres'].mean()
     max_temp_time = data[(data['temp'] == max_temp)]["time_local"].values[0]
     max_prcp = data['prcp'].max()
     min_wind = data['wspd'].min()
     max_prcp_time = data[(data['prcp'] == max_prcp)]["time_local"].values[0]
-    best_weather = data[(data['temp'] > max_temp - 3) & (data['prcp'] == 0) &
-                        (data['wspd'] < min_wind + 6)].values
+    best_weather = data[(data['temp'] > max_temp - small_difference) &
+                        (data['prcp'] == nothing) &
+                        (data['wspd'] < min_wind + small_difference)].values
 
-    await message.reply(f"максимальная температура была {max_temp},"
-                        f"это было в {max_temp_time}")
+    db = SqliteDatabase('Weather.db')
 
-    await bot.send_message(message.from_user.id, f"среднее давление за это"
-                                                 f"время {avg_pressure}")
-    await bot.send_message(message.from_user.id, f"больше всего осадков было"
-                                                 f"{max_prcp}, это было в"
-                                                 f"{max_prcp_time}")
+    class Data(Model):
+        name = FloatField()
+        weather_conditions = FloatField()
+        day = DateField()
 
-    await bot.send_message(message.from_user.id, "самая комфортная погода"
-                                                 "была в:")
+        class Meta:
+            database = db
+
+    class SuperWeather(Model):
+        wind = FloatField()
+        temp = FloatField()
+        prcp = IntegerField()
+        day = DateField()
+
+        class Meta:
+            database = db
+
+    db.connect()
+    db.create_tables([Data, SuperWeather])
+
+    high_temp = Data(name='highest temperature', weather_conditions=max_temp,
+                     day=max_temp_time)
+    high_temp.save()
+    high_prcp = Data(name='max precipitation', weather_conditions=max_prcp,
+                     day=max_prcp_time)
+    high_prcp.save()
+
+    time_place = 1
+    temp_place = 2
+    wind_place = 8
     for elem in best_weather:
-        str_to_print = f"в {elem[1]} температура была {elem[2]}, осадков не" \
-                       f" было, скорость ветра была {elem[8]} м/с"
+        line = SuperWeather(temp=elem[temp_place], day=elem[time_place],
+                            wind=elem[wind_place], prcp=0)
+        line.save()
+    for string in Data.select():
+        str_to_print = f"{string.name}: {string.weather_conditions} в" \
+                       f"{string.day}"
         await bot.send_message(message.from_user.id, str_to_print)
+    for line in SuperWeather.select():
+        str_to_print = f"в {line.day} темп {line.temp}, ветер {line.wind}," \
+                       f"осадки {line.prcp}"
+        await bot.send_message(message.from_user.id, str_to_print)
+
+    db.close()
 
 
 @dp.message_handler()
@@ -95,12 +128,12 @@ async def get_weather(message: types.Message):
         humidity = data["main"]["humidity"]
         pressure = data["main"]["pressure"]
         wind = data["wind"]["speed"]
-        sunrise_timestamp = datetime.datetime.\
+        sunrise_timestamp = datetime.datetime. \
             fromtimestamp(data["sys"]["sunrise"])
-        sunset_timestamp = datetime.datetime.\
+        sunset_timestamp = datetime.datetime. \
             fromtimestamp(data["sys"]["sunset"])
-        length_of_the_day = datetime.datetime.\
-            fromtimestamp(data["sys"]["sunset"]) - datetime.datetime.\
+        length_of_the_day = datetime.datetime. \
+            fromtimestamp(data["sys"]["sunset"]) - datetime.datetime. \
             fromtimestamp(data["sys"]["sunrise"])
 
         current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -117,7 +150,6 @@ async def get_weather(message: types.Message):
 
     except Exception:
         await message.reply("\U00002620 Проверьте название города \U00002620")
-
 
 if __name__ == '__main__':
     executor.start_polling(dp)

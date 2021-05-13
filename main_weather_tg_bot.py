@@ -36,10 +36,10 @@ async def stats(message: types.Message):
     nothing = 0
     data = pd.read_csv('RU.csv')
     max_temp = data['temp'].max()
-    max_temp_time = data[(data['temp'] == max_temp)]["time_local"].values[0]
+    max_temp_time = data[data['temp'] == max_temp]["time_local"].values[0]
     max_prcp = data['prcp'].max()
     min_wind = data['wspd'].min()
-    max_prcp_time = data[(data['prcp'] == max_prcp)]["time_local"].values[0]
+    max_prcp_time = data[data['prcp'] == max_prcp]["time_local"].values[0]
     best_weather = data[(data['temp'] > max_temp - small_difference) &
                         (data['prcp'] == nothing) &
                         (data['wspd'] < min_wind + small_difference)].values

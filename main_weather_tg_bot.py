@@ -6,7 +6,7 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from config import tg_bot_token, open_weather_token
-from peewee import *
+from peewee import DateField, FloatField, IntegerField, Model, SqliteDatabase
 
 bot = Bot(token=tg_bot_token)
 dp = Dispatcher(bot)

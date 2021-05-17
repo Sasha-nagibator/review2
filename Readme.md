@@ -4,6 +4,10 @@
 
 В чате вводите название города, бот выводит текущую погоду.
 Если напишите /stats, бот выведет статистику погоды в Москве за последнее время.
+Работает если запустить файл main_weather_tg_bot.py командой
+```bash
+   python3 main_weather_tg_bot.py
+```
 
 ## __Если хотите запустить код__:
 
@@ -34,10 +38,19 @@
    pip install aiogram
 ```
 
+
+Если не установлен peewee:  
+
+```bash
+   pip install peewee
+```
+
+
 ### __Запустить тесты__
 ```bash
-   python3 test_main.py
+   python3 -m unittest test_main.py
 ```
+
 
 ### __Запустить основной файл__
 ```bash
